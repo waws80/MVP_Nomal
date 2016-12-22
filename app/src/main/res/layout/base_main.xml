@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.thanatos.mvp_nomal.MainActivity">
+
+    <include layout="@layout/base_content"
+        android:id="@+id/base_main_content"/>
+
+
+    <include
+        android:visibility="gone"
+        android:id="@+id/base_main_loading"
+        layout="@layout/base_loading"/>
+
+
+    <include
+        android:visibility="gone"
+        android:id="@+id/base_main_error"
+        layout="@layout/base_error"/>
+
+</android.support.design.widget.CoordinatorLayout>
