@@ -17,6 +17,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets{
+        main{
+            jniLibs.srcDirs=['libs']
+        }
+    }
 }
 
 dependencies {
@@ -28,4 +34,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:design:25.0.1'
     compile 'com.jakewharton:butterknife:5.1.1'
+    compile files('libs/Volley.jar')
+    compile 'com.google.code.gson:gson:2.2.4'
 }

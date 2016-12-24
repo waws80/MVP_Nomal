@@ -4,10 +4,11 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.thanatos.mvp_nomal.MainActivity">
+    tools:context="org.thanatos.mvp_nomal.ui.MainActivity">
 
-    <include layout="@layout/base_content"
-        android:id="@+id/base_main_content"/>
+
+        <include layout="@layout/base_content"
+            android:id="@+id/base_main_content"/>
 
 
     <include
