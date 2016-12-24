@@ -1,38 +1,42 @@
-package org.thanatos.mvp_nomal;
+package org.thanatos.mvp_nomal.base;
 
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
-public abstract class BaseActivity extends AppCompatActivity {
+import org.thanatos.mvp_nomal.R;
+import org.thanatos.mvp_nomal.utils.CustomVolly;
+
+public abstract class BaseActivity<V,P extends BasePresenter<V>> extends AppCompatActivity {
 
     private FrameLayout baseContentParent;
 
     private SwipeRefreshLayout baseContentSwipRFL;
 
-    private View baseMainLoading;
-
     private View baseMainError;
 
-    private View baseMainContent;
+    private P mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.base_main);
-        init();
+        mPresenter=createPresenter();
+        mPresenter.attachView((V)this);
+        init(savedInstanceState);
         initListener();
-        onCreateView(savedInstanceState);
+
     }
 
-    private void init() {
-        baseMainLoading=findViewById(R.id.base_main_loading);
+    private void init(Bundle savedInstanceState) {
         baseMainError=findViewById(R.id.base_main_error);
-        baseMainContent=findViewById(R.id.base_main_content);
         baseContentSwipRFL= (SwipeRefreshLayout) findViewById(R.id.base_content_swipRFL);
         baseContentParent= (FrameLayout) findViewById(R.id.base_content_parent);
+        onCreateView(savedInstanceState);
+
     }
 
     private void initListener(){
@@ -40,6 +44,10 @@ public abstract class BaseActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 baseContentSwipRFL.setRefreshing(true);
+                if (!CustomVolly.isNetworkAvailable())
+                    CustomVolly.showToast("网络异常，稍后再试!");
+
+               
                 onRefreshData();
             }
         });
@@ -47,7 +55,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public  abstract void  onCreateView(Bundle savedInstanceState);
     public abstract void back();
-    public  void onRefreshData(){}
+    public  abstract void onRefreshData();
+    public abstract P createPresenter();
 
     public void setView(int layoutId){
         baseContentParent.addView(View.inflate(this,layoutId,null));
@@ -57,16 +66,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (baseContentSwipRFL.isRefreshing()){
             baseContentSwipRFL.setRefreshing(false);
         }
-    }
-
-    public void hindProgress(){
-        if (baseMainLoading.getVisibility()==View.VISIBLE)
-            baseMainLoading.setVisibility(View.GONE);
-    }
-
-    public void showProgress(){
-        if (baseMainLoading.getVisibility()==View.GONE)
-            baseMainLoading.setVisibility(View.VISIBLE);
     }
 
     public void hindError(){
@@ -79,15 +78,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             baseMainError.setVisibility(View.VISIBLE);
     }
 
-    public void hindContent(){
-        if (baseMainContent.getVisibility()==View.VISIBLE)
-            baseMainContent.setVisibility(View.GONE);
-    }
-
-    public void showContent(){
-        if (baseMainContent.getVisibility()==View.GONE)
-            baseMainContent.setVisibility(View.VISIBLE);
-    }
 
     @Override
     public void onBackPressed() {
@@ -96,5 +86,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mPresenter!=null)
+            mPresenter.detcahView();
+        mPresenter=null;
+        CustomVolly.cancelRequest();
+        CustomVolly.unRegister();
+        Log.w("test", "onDestroy: " );
+        System.exit(0);
+        System.runFinalization();
+    }
 }
